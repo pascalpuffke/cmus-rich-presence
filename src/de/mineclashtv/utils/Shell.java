@@ -15,11 +15,12 @@ public class Shell {
     }
 
     /**
-     * Gets current cmus status by executing <code>cmus-remote -Q</code>.
-     * @return Output from cmus-remote
+     * Executes a shell command
+     * @param cmd
+     * @return Output from command
      */
-    public String getCmusRemote() {
-        processBuilder.command("sh", "-c", "cmus-remote -Q");
+    public String exec(String cmd) {
+        processBuilder.command("sh", "-c", cmd);
 
         try {
             Process process = processBuilder.start();
@@ -27,14 +28,13 @@ public class Shell {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null)
                 output.append(line + System.lineSeparator());
-            }
 
             int exitCode = process.waitFor();
             if(exitCode == 0)
                 return output.toString();
-            else logger.print("Something fucked up.");
+            else logger.print("Something went wrong. Exit code " + exitCode);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

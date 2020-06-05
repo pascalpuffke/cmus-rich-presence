@@ -8,7 +8,7 @@ import net.arikia.dev.drpc.DiscordRichPresence;
 
 public class Main {
 
-    private static final String id = "718109162923360327";
+    private static String id = "718109162923360327";
     private static Shell shell;
     private static Parser parser;
 
@@ -20,23 +20,29 @@ public class Main {
         DiscordRPC.discordInitialize(id, null, true);
         log.print("Successfully initialized DiscordRPC");
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> DiscordRPC.discordShutdown()));
+
+        log.print(parser.getTag("status") + ": " + parser.getTag("tag artist") + " - " + parser.getTag("tag title") + " from " + parser.getTag("tag album"));
+
         // Main loop used to update status
         while(true) {
             try {
-                if(parser.getTag(shell.getCmusRemote(), "status").equals("playing")) {
-                    DiscordRichPresence discordRichPresence = new DiscordRichPresence.Builder("Playing song").setDetails(
-                            parser.getTag(shell.getCmusRemote(), "artist") + " - " + parser.getTag(shell.getCmusRemote(), "title")).build();
+                if(parser.getTag("status").equals("playing")) {
+                    log.print("Playing: " + parser.getTag("tag artist") + " - " + parser.getTag("tag title") + " from " + parser.getTag("tag album"));
+                    DiscordRichPresence discordRichPresence = new DiscordRichPresence.Builder(
+                            "from " + parser.getTag("tag album")).setDetails(
+                                    parser.getTag("tag artist") + " - " + parser.getTag("tag title")).build();
                     DiscordRPC.discordUpdatePresence(discordRichPresence);
-                } else {
-                    DiscordRichPresence discordRichPresence = new DiscordRichPresence.Builder("Paused song").setDetails(
-                            parser.getTag(shell.getCmusRemote(), "artist") + " - " + parser.getTag(shell.getCmusRemote(), "title")).build();
+                } else if(parser.getTag("status").equals("paused")){
+                    DiscordRichPresence discordRichPresence = new DiscordRichPresence.Builder(
+                            "from " + parser.getTag("tag album") + " [paused]").setDetails(
+                                    parser.getTag("tag artist") + " - " + parser.getTag("tag title")).build();
                     DiscordRPC.discordUpdatePresence(discordRichPresence);
                 }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }
