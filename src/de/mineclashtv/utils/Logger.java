@@ -19,11 +19,10 @@ public class Logger {
     }
 
     public void print(String s) {
-        if (showTime) {
+        if (showTime)
             printStream.println("[" + getTime() + "] " + s);
-        } else {
+        else
             printStream.println(s);
-        }
     }
 
     private String getTime() {

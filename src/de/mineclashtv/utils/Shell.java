@@ -34,7 +34,6 @@ public class Shell {
             int exitCode = process.waitFor();
             if(exitCode == 0)
                 return output.toString();
-            else logger.print("Something went wrong. Exit code " + exitCode);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
