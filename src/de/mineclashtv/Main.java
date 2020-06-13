@@ -12,6 +12,8 @@ public class Main {
     /** While set to <code>true</code>, the update loop will run. */
     private static boolean run = false;
     private static final String id = "718109162923360327";
+    /** Text to display when user hovers over icon */
+    private static final String iconText = "C* music player";
     private static Parser parser;
     private static Logger log;
 
@@ -30,49 +32,57 @@ public class Main {
             if(!debug) DiscordRPC.discordShutdown();
         }));
 
-        updateLoop();
+        try {
+            updateLoop();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Main loop used to update status. Refreshes every second.
      * Also this is terribly written but who cares
      */
-    private static void updateLoop() {
+    private static void updateLoop() throws InterruptedException {
         while(run) {
-            try {
-                DiscordRichPresence discordRichPresence = null;
-                if(parser.getTag("status").equals("playing")) {
-                    if(parser.getTag("tag title").equals("")) // Song isn't tagged properly; show filename
-                        discordRichPresence = new DiscordRichPresence.Builder(parser.getTag("file")).build();
-                    else
+            DiscordRichPresence discordRichPresence = null;
+
+            switch(parser.getTag("status")) {
+                case "playing":
+                    if(parser.getTag("tag title").equals("")) { // Song isn't tagged properly; show filename
+                        discordRichPresence = new DiscordRichPresence.Builder(parser.getTag("file")).setBigImage("icon", iconText).build();
+                    } else {
                         discordRichPresence = new DiscordRichPresence.Builder(
                                 "from " + parser.getTag("tag album") + " (" + parser.getTag("tag date") + ")").setDetails(
-                                parser.getTag("tag artist") + " - " + parser.getTag("tag title")).build();
-                } else if(parser.getTag("status").equals("paused")) {
-                    if(parser.getTag("tag title").equals(""))
-                        discordRichPresence = new DiscordRichPresence.Builder(parser.getTag("file") + " [paused]").build();
-                    else
+                                parser.getTag("tag artist") + " - " + parser.getTag("tag title")).setBigImage("icon", iconText).build();
+                    }
+                    break;
+                case "paused":
+                    if(parser.getTag("tag title").equals("")) {
+                        discordRichPresence = new DiscordRichPresence.Builder(parser.getTag("file") + " [paused]").setBigImage("icon", iconText).build();
+                    } else {
                         discordRichPresence = new DiscordRichPresence.Builder(
                                 "from " + parser.getTag("tag album") + " (" + parser.getTag("tag date") + ") [paused]").setDetails(
-                                parser.getTag("tag artist") + " - " + parser.getTag("tag title")).build();
-                }
-
-                if(debug) {
-                    try {
-                        assert discordRichPresence != null;
-
-                        log.print(discordRichPresence.details + " " + discordRichPresence.state);
-                    } catch(NullPointerException e) {
-                        // A NullPointerException may get thrown when DiscordRPC isn't properly initialized and the song
-                        // is stopped
-                        log.print("Song is stopped, waiting for playback...");
+                                parser.getTag("tag artist") + " - " + parser.getTag("tag title")).setBigImage("icon", iconText).build();
                     }
-                } else DiscordRPC.discordUpdatePresence(discordRichPresence);
-
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                    break;
+                default:
+                    break;
             }
+
+            if(debug) {
+                try {
+                    assert discordRichPresence != null;
+
+                    log.print(discordRichPresence.details + " " + discordRichPresence.state);
+                } catch(NullPointerException e) {
+                    // A NullPointerException may get thrown when DiscordRPC isn't properly initialized and the song
+                    // is stopped
+                    log.print("Song is stopped, waiting for playback...");
+                }
+            } else DiscordRPC.discordUpdatePresence(discordRichPresence);
+
+            Thread.sleep(1000);
         }
     }
 }
