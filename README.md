@@ -8,6 +8,7 @@ External Discord Rich Presence plugin for the C* music player
 - Debug mode which disables DiscordRPC and gives more console output
 
 ## Future plans
+- Display current and remaining time. This is a little difficult though, as it would require coming up with a different updating method and I don't know how to realize this yet
 - Better support for songs that aren't tagged properly (properly means artist, title, album and year information)
 - Commandline args parsing support
 - Easy customization options
