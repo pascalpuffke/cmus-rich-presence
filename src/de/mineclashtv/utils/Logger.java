@@ -10,8 +10,8 @@ import java.util.Calendar;
  */
 public class Logger {
 
-    private boolean showTime;
-    private PrintStream printStream;
+    private final boolean showTime;
+    private final PrintStream printStream;
 
     public Logger(boolean showTime, PrintStream printStream) {
         this.showTime = showTime;

@@ -6,17 +6,15 @@ import java.io.InputStreamReader;
 
 public class Shell {
 
-    private ProcessBuilder processBuilder;
-    private Logger logger;
+    private final ProcessBuilder processBuilder;
 
     public Shell() {
         processBuilder = new ProcessBuilder();
-        logger = new Logger(true, System.out);
     }
 
     /**
      * Executes a shell command
-     * @param cmd
+     * @param cmd Command to execute
      * @return Output from command
      */
     public String exec(String cmd) {
