@@ -72,8 +72,6 @@ public class Main {
 
             if(debug) {
                 try {
-                    assert discordRichPresence != null;
-
                     log.print(discordRichPresence.details + " " + discordRichPresence.state);
                 } catch(NullPointerException e) {
                     // A NullPointerException may get thrown when DiscordRPC isn't properly initialized and the song
