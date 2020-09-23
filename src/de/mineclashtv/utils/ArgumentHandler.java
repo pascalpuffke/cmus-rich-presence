@@ -8,7 +8,8 @@ public class ArgumentHandler {
     }
 
     public void parseArguments(String[] args) {
-        for (int i = 0; i < args.length; i++) switch (args[i]) {
+        for (int i = 0; i < args.length; i++) {
+            switch (args[i]) {
                 case "--debug":
                     Main.debug = true;
                     System.out.printf("Enabled debug mode. Disabled DiscordRPC.\n");
@@ -20,5 +21,6 @@ public class ArgumentHandler {
                 case "":
                     break;
             }
+        }
     }
 }

@@ -2,7 +2,7 @@ package de.mineclashtv;
 
 import de.mineclashtv.utils.ArgumentHandler;
 import de.mineclashtv.utils.Parser;
-import de.mineclashtv.utils.Updater;
+import de.mineclashtv.utils.DiscordRichPresenceFactory;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
@@ -17,7 +17,7 @@ public class Main {
     private static final String id = "718109162923360327";
     /** Text to display when user hovers over icon */
     public static final String iconText = "C* music player";
-    public static Parser parser;
+    private static Parser parser;
 
     public static void main(String[] args) {
         parser = new Parser();
@@ -42,15 +42,29 @@ public class Main {
         }
     }
 
-    /**
-     * Main loop used to update status. Refreshes every second.
-     * Also this is terribly written but who cares
-     */
+    public static void printTagWarning(String fileName) {
+        System.out.printf("Warning: Song not tagged properly: %s\n", fileName);
+    }
+
     private static void updateLoop() throws InterruptedException {
         while(run) {
-            DiscordRichPresence discordRichPresence = Updater.update();
-            DiscordRPC.discordUpdatePresence(discordRichPresence);
+            DiscordRichPresence discordRichPresence = DiscordRichPresenceFactory.getRichPresence(parser);
 
+            if(discordRichPresence != null) {
+                DiscordRPC.discordUpdatePresence(discordRichPresence);
+            } else { // Nothing currently playing - don't display anything.
+                DiscordRPC.discordClearPresence();
+            }
+
+            if(debug) {
+                if (discordRichPresence != null) {
+                    System.out.printf("%s %s\n", discordRichPresence.details, discordRichPresence.state);
+                } else {
+                    System.out.printf("Song is stopped, waiting for playback...\n");
+                }
+            }
+
+            // TODO figure out executors
             Thread.sleep(interval);
         }
     }
