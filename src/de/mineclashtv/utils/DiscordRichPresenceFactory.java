@@ -3,6 +3,8 @@ package de.mineclashtv.utils;
 import de.mineclashtv.Main;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
+import java.io.File;
+
 public class DiscordRichPresenceFactory {
 
     /**
@@ -25,15 +27,18 @@ public class DiscordRichPresenceFactory {
                 return new DiscordRichPresence
                         .Builder("from " + album + " (" + date + ")")
                         .setDetails(artist + " - " + title)
-                        .setBigImage("icon", iconText).build();
+                        .setBigImage("icon", iconText)
+                        .build();
             } else { // Song isn't tagged properly; show filename
-                String fileName = parser.getTag("file");
+                String filePath = parser.getTag("file");
+                String fileName = new File(filePath).getName();
 
-                Main.printTagWarning(fileName);
+                Main.printTagWarning(filePath);
 
                 return new DiscordRichPresence
-                        .Builder(fileName)
-                        .setBigImage("icon", iconText).build();
+                        .Builder(fileName.substring(0, fileName.lastIndexOf(".")))
+                        .setBigImage("icon", iconText)
+                        .build();
             }
         } else {
             // Nothing is playing; handled in main class

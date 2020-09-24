@@ -20,6 +20,12 @@ public class Main {
     private static Parser parser;
 
     public static void main(String[] args) {
+        // The DiscordRPC library does not currently support macOS, so display this error message instead of pretending to work
+        if(!System.getProperty("os.name").equals("Linux")) {
+            System.err.printf("You are not using Linux. DiscordRPC is broken in macOS. (If you use Windows, this program would be useless anyway).\nTerminating...\n");
+            System.exit(1);
+        }
+
         parser = new Parser();
 
         new ArgumentHandler().parseArguments(args);
