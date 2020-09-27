@@ -3,8 +3,6 @@ package de.mineclashtv.utils;
 import de.mineclashtv.Main;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
-import java.io.File;
-
 public class DiscordRichPresenceFactory {
 
     /**
@@ -17,12 +15,12 @@ public class DiscordRichPresenceFactory {
     public static DiscordRichPresence getRichPresence(Parser parser) {
         String iconText = Main.iconText;
 
-        if(parser.getTag("status").equals("playing")) {
-            if(!parser.getTag("tag title").equals("")) {
-                String album = parser.getTag("tag album");
-                String date = parser.getTag("tag date");
-                String artist = parser.getTag("tag artist");
-                String title = parser.getTag("tag title");
+        if(parser.isPlaying()) {
+            if(parser.hasTitle()) {
+                String album = parser.getAlbum();
+                String date = parser.getDate();
+                String artist = parser.getArtist();
+                String title = parser.getTitle();
 
                 return new DiscordRichPresence
                         .Builder("from " + album + " (" + date + ")")
@@ -30,13 +28,13 @@ public class DiscordRichPresenceFactory {
                         .setBigImage("icon", iconText)
                         .build();
             } else { // Song isn't tagged properly; show filename
-                String filePath = parser.getTag("file");
-                String fileName = new File(filePath).getName();
+                String filePath = parser.getPath();
+                String fileName = parser.getNameFromFile();
 
                 Main.printTagWarning(filePath);
 
                 return new DiscordRichPresence
-                        .Builder(fileName.substring(0, fileName.lastIndexOf(".")))
+                        .Builder(fileName)
                         .setBigImage("icon", iconText)
                         .build();
             }

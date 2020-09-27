@@ -10,6 +10,8 @@ public class Main {
 
     /** When set to <code>true</code>, DiscordRPC won't be initialized and verbose console output gets enabled. */
     public static boolean debug = false;
+    /** When set to <code>true</code>, all console output gets disabled. </code> */
+    public static boolean quiet = false;
     /** How often to update DiscordRPC in ms */
     public static int interval = 1000;
     /** While set to <code>true</code>, the update loop will run. */
@@ -22,7 +24,7 @@ public class Main {
     public static void main(String[] args) {
         // The DiscordRPC library does not currently support macOS, so display this error message instead of pretending to work
         if(!System.getProperty("os.name").equals("Linux")) {
-            System.err.printf("You are not using Linux. DiscordRPC is broken in macOS. (If you use Windows, this program would be useless anyway).\nTerminating...\n");
+            System.err.print("You are not using Linux. DiscordRPC is broken in macOS. (If you use Windows, this program would be useless anyway).\nTerminating...\n");
             System.exit(1);
         }
 
@@ -32,7 +34,7 @@ public class Main {
 
         if(!debug) {
             DiscordRPC.discordInitialize(id, null, true);
-            System.out.printf("Successfully initialized DiscordRPC\n");
+            if(!quiet) System.out.print("Successfully initialized DiscordRPC\n");
         }
         run = true;
 
@@ -49,7 +51,7 @@ public class Main {
     }
 
     public static void printTagWarning(String fileName) {
-        System.out.printf("Warning: Song not tagged properly: %s\n", fileName);
+        if(!quiet) System.out.printf("Warning: Song not tagged properly: %s\n", fileName);
     }
 
     private static void updateLoop() throws InterruptedException {
@@ -66,7 +68,7 @@ public class Main {
                 if (discordRichPresence != null) {
                     System.out.printf("%s %s\n", discordRichPresence.details, discordRichPresence.state);
                 } else {
-                    System.out.printf("Song is stopped, waiting for playback...\n");
+                    System.out.print("Song is stopped, waiting for playback...\n");
                 }
             }
 
