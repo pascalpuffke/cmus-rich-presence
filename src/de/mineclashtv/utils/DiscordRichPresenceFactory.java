@@ -12,9 +12,7 @@ public class DiscordRichPresenceFactory {
      * @param parser Main <code>Parser</code> object for fetching parameters
      * @return Formatted <code>DiscordRichPresence</code> object if a song is playing, <code>null</code> otherwise
      */
-    public static DiscordRichPresence getRichPresence(Parser parser) {
-        String iconText = Main.iconText;
-
+    public static DiscordRichPresence getRichPresence(Parser parser, String iconText) {
         if(parser.isPlaying()) {
             if(parser.hasTitle()) {
                 String album = parser.getAlbum();

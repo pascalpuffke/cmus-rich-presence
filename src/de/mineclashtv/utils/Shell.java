@@ -27,7 +27,7 @@ public class Shell {
 
             String line;
             while ((line = reader.readLine()) != null)
-                output.append(line + System.lineSeparator());
+                output.append(line).append("\n");
 
             int exitCode = process.waitFor();
             if(exitCode == 0)
