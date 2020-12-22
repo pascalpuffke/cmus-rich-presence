@@ -3,7 +3,23 @@ package de.mineclashtv.utils;
 import de.mineclashtv.Main;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class DiscordRichPresenceFactory {
+
+    public static Map<String, String> format = new HashMap<>();
+
+    static {
+        try {
+            format.put("bottom", (String) Main.configurationFile.getValue("bottom_format"));
+            format.put("top", (String) Main.configurationFile.getValue("top_format"));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
 
     /**
      * Creates a formatted <code>DiscordRichPresence</code> object with all available information.<br/>
@@ -20,9 +36,20 @@ public class DiscordRichPresenceFactory {
                 String artist = parser.getArtist();
                 String title = parser.getTitle();
 
+                String top = format.get("top")
+                        .replace("%album", album)
+                        .replace("%date", date)
+                        .replace("%artist", artist)
+                        .replace("%title", title);
+                String bottom = format.get("bottom")
+                        .replace("%album", album)
+                        .replace("%date", date)
+                        .replace("%artist", artist)
+                        .replace("%title", title);
+
                 return new DiscordRichPresence
-                        .Builder("from " + album + " (" + date + ")")
-                        .setDetails(artist + " - " + title)
+                        .Builder(bottom)
+                        .setDetails(top)
                         .setBigImage("icon", iconText)
                         .build();
             } else { // Song isn't tagged properly; show filename
