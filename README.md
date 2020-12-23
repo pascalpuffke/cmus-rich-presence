@@ -36,6 +36,8 @@ You can customize the top and bottom format using these placeholders:
     - %album
     - %date
 
+Comments are supported by starting a line with the '#' character.
+
 **Note: ** If you don't like the way this program handles its configuration file, please continue using version 1.8 and wait for 2.0 to come out, where I will put the config file in more appropriate places (or even custom ones).
 As of now, this is only an admittedly janky solution to finally have this functionality implemented.
 

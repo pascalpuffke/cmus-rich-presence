@@ -14,18 +14,24 @@ public class ConfigurationFile {
         1. Check if a config file already exists
             - if it does, use that;
             - otherwise, create one with the default values (DEFAULT_CONFIG string).
-        2. Parse every line and search for supported keywords.
+        2. Parse every line and search for supported keywords. Ignore comments ('#') and empty lines.
             - These are: DEBUG, QUIET, INTERVAL, TOP_FORMAT, BOTTOM_FORMAT.
         3. Put the results from step 2 into a HashMap (CONFIG_MAP)
         4. Use the values from the generated HashMap elsewhere
      */
 
     private final String DEFAULT_CONFIG =
-            "DEBUG=false\n" +
-            "QUIET=false\n" +
-            "INTERVAL=1000\n" +
-            "TOP_FORMAT=\"%artist - %title\"\n" +
-            "BOTTOM_FORMAT=\"from %album (%date)\"\n"
+            "# Set to true to disable DiscordRPC and show more verbose console output\n" +
+            "DEBUG=false\n\n" +
+            "# Set to true to disable console output entirely\n" +
+            "QUIET=false\n\n" +
+            "# Polling interval in which the program grabs the current cmus status, in milliseconds\n" +
+            "INTERVAL=1000\n\n" +
+            "# Sets the top format string (first line in the discord rich presence details)\n" +
+            "# Supported placeholders: %artist, %title, %album, %date\n" +
+            "TOP_FORMAT=\"%artist - %title\"\n\n" +
+            "# Sets the bottom format string (second line in the discord rich presence details)\n" +
+            "BOTTOM_FORMAT=\"from %album (%date)\"\n\n"
     ;
     private final Map<String, Object> CONFIG_MAP = new HashMap<>();
 
@@ -72,7 +78,7 @@ public class ConfigurationFile {
                 CONFIG_MAP.put("top_format", s.substring(12, s.length() - 1));
             else if(s.startsWith("BOTTOM_FORMAT="))
                 CONFIG_MAP.put("bottom_format", s.substring(15, s.length() - 1));
-            else
+            else if(!s.startsWith("#") && !s.isEmpty()) /* Ignore comments */
                 System.out.println("Unknown config '" + s + "'.");
         }
     }

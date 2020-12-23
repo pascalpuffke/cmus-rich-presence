@@ -17,7 +17,7 @@ public class Main {
     public static int interval;
     /** While set to <code>true</code>, the update loop will run. */
     public static boolean run = false;
-    private static final String VER = "1.9";
+    private static final String VER = "1.9.1";
     private static final String ID = "718109162923360327";
     /** Text to display when user hovers over icon */
     public static final String ICON_TEXT = String.format("[v%s] C* music player", VER);
