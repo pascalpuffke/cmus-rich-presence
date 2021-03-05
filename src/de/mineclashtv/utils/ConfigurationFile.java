@@ -20,31 +20,39 @@ public class ConfigurationFile {
         4. Use the values from the generated HashMap elsewhere
      */
 
-    private final String DEFAULT_CONFIG =
-            "# Set to true to disable DiscordRPC and show more verbose console output\n" +
-            "DEBUG=false\n\n" +
-            "# Set to true to disable console output entirely\n" +
-            "QUIET=false\n\n" +
-            "# Polling interval in which the program grabs the current cmus status, in milliseconds\n" +
-            "INTERVAL=1000\n\n" +
-            "# Sets the top format string (first line in the discord rich presence details)\n" +
-            "# Supported placeholders: %artist, %title, %album, %date\n" +
-            "TOP_FORMAT=\"%artist - %title\"\n\n" +
-            "# Sets the bottom format string (second line in the discord rich presence details)\n" +
-            "BOTTOM_FORMAT=\"from %album (%date)\"\n\n"
-    ;
-    private final Map<String, Object> CONFIG_MAP = new HashMap<>();
+    private final Map<String, Object> CONFIG_MAP;
+    private final String DEFAULT_CONFIG;
+    private final Path CONFIG_FILE;
 
-    private final Path WORKING_DIR = Paths.get(System.getProperty("user.dir"));
-    private final Path CONFIG_FILE = Paths.get(WORKING_DIR.toString() + "/cmusrp.conf");
+    public ConfigurationFile() {
+        // As this project is stuck on Java 8, we have to do this terrible mess.
+        // In newer versions of Java, we could use text blocks, but compatibility is a little more important than
+        // comfort whilst developing a project that is actually used by people other than me
+        this.DEFAULT_CONFIG =
+                "# Set to true to disable DiscordRPC and show more verbose console output\n" +
+                "DEBUG=false\n\n" +
+                "# Set to true to disable console output entirely\n" +
+                "QUIET=false\n\n" +
+                "# Polling interval in which the program grabs the current cmus status, in milliseconds\n" +
+                "INTERVAL=1000\n\n" +
+                "# Sets the top format string (first line in the discord rich presence details)\n" +
+                "# Supported placeholders: %artist, %title, %album, %date\n" +
+                "TOP_FORMAT=\"%artist - %title\"\n\n" +
+                "# Sets the bottom format string (second line in the discord rich presence details)\n" +
+                "BOTTOM_FORMAT=\"from %album (%date)\"\n\n";
+        this.CONFIG_MAP = new HashMap<>();
+        this.CONFIG_FILE = Paths.get(System.getProperty("user.dir") + "/cmusrp.conf");
+    }
 
     public void initialize() throws IOException {
         if(!Files.exists(CONFIG_FILE))
-            createDefault(CONFIG_FILE);
-    }
+            Files.write(CONFIG_FILE, DEFAULT_CONFIG.getBytes());
 
-    public void createDefault(Path path) throws IOException {
-        Files.write(path, DEFAULT_CONFIG.getBytes());
+        System.out.printf(
+                "Reading config file %s (%d bytes)\n",
+                CONFIG_FILE.toAbsolutePath().toString(),
+                Files.size(CONFIG_FILE)
+        );
     }
 
     public Object getValue(String key) throws IOException {
@@ -66,20 +74,44 @@ public class ConfigurationFile {
     }
 
     private void populateConfigMap(String data) {
-        /* Maybe there is a better way to do this. */
         for(String s : data.split("\n")) {
-            if(s.startsWith("DEBUG="))
-                CONFIG_MAP.put("debug", Boolean.parseBoolean(s.substring(6)));
-            else if(s.startsWith("QUIET="))
-                CONFIG_MAP.put("quiet", Boolean.parseBoolean(s.substring(6)));
-            else if(s.startsWith("INTERVAL="))
-                CONFIG_MAP.put("interval", Integer.parseInt(s.substring(9)));
-            else if(s.startsWith("TOP_FORMAT="))
-                CONFIG_MAP.put("top_format", s.substring(12, s.length() - 1));
-            else if(s.startsWith("BOTTOM_FORMAT="))
-                CONFIG_MAP.put("bottom_format", s.substring(15, s.length() - 1));
-            else if(!s.startsWith("#") && !s.isEmpty()) /* Ignore comments */
-                System.out.println("Unknown config '" + s + "'.");
+            if(!(s.startsWith("#") || s.isEmpty())) { // Exclude comments and empty lines
+                String[] a = s.split("=");
+
+                if(a.length != 2)
+                    throw new IllegalArgumentException(String.format(
+                            "Length does not equal 2, possible missing '=' or invalid config.\nlength=%d\na[0]='%s'",
+                            a.length,
+                            a[0]
+                    ));
+
+                // Parsing value by determining its type. No support for floating point numbers
+                Object value =
+                        // Is the first char not a decimal?
+                        Character.getType(a[1].charAt(0)) != Character.DECIMAL_DIGIT_NUMBER ?
+                                // Does the string equal "true"?
+                                a[1].equals("true") ? true :
+                                        // Does the string equal "false"?
+                                        a[1].equals("false") ? false :
+                                                // No decimal, no boolean - default to string
+                                                a[1] :
+                                // No boolean, but a decimal - parse as integer
+                                Integer.parseInt(a[1]);
+
+                // removing quotes from string
+                if(value instanceof String)
+                    value = ((String) value).substring(1, ((String) value).length() - 1);
+
+                CONFIG_MAP.put(a[0].toLowerCase(), value);
+            }
         }
+
+        if(!(Boolean) CONFIG_MAP.get("quiet"))
+            for(Map.Entry<String, Object> entry : CONFIG_MAP.entrySet())
+                System.out.printf("%s=%s [%s]\n",
+                        entry.getKey(),
+                        entry.getValue().toString(),
+                        entry.getValue().getClass().getSimpleName()
+                );
     }
 }

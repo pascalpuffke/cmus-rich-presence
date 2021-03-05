@@ -6,6 +6,7 @@ import de.mineclashtv.utils.Updater;
 import net.arikia.dev.drpc.DiscordRPC;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
 
@@ -17,11 +18,11 @@ public class Main {
     public static int interval;
     /** While set to <code>true</code>, the update loop will run. */
     public static boolean run = false;
-    private static final String VER = "1.9.1";
-    private static final String ID = "718109162923360327";
+    public static final String VER = "2.0.0-dev";
+    public static final String ID = "718109162923360327";
     /** Text to display when user hovers over icon */
     public static final String ICON_TEXT = String.format("[v%s] C* music player", VER);
-    public static final ConfigurationFile configurationFile = new ConfigurationFile();
+    public static ConfigurationFile configurationFile = new ConfigurationFile();
     
     public static void main(String[] args) {
         // The DiscordRPC library does not currently support macOS, so display this error message instead of pretending to work
@@ -30,15 +31,13 @@ public class Main {
             System.exit(1);
         }
 
-        try {
-            configurationFile.initialize();
+        initializeConfig();
 
-            debug = (boolean) configurationFile.getValue("debug");
-            quiet = (boolean) configurationFile.getValue("quiet");
-            interval = (int) configurationFile.getValue("interval");
-        } catch(IOException exception) {
-            System.err.println("Could not access config file!");
-            exception.printStackTrace();
+        if(quiet) {
+            System.out.close();
+
+            /* Probably a terrible idea. */
+            System.err.close();
         }
 
         try {
@@ -49,7 +48,7 @@ public class Main {
 
         if(!debug) {
             DiscordRPC.discordInitialize(ID, null, true);
-            printf("Successfully initialized DiscordRPC\n");
+            System.out.println("Successfully initialized DiscordRPC");
         }
         run = true;
 
@@ -68,12 +67,20 @@ public class Main {
         }
     }
 
-    public static void printTagWarning(String fileName) {
-        printf("Warning: Song not tagged properly: %s\n", fileName);
+    private static void initializeConfig() {
+        try {
+            configurationFile.initialize();
+
+            debug = (boolean) configurationFile.getValue("debug");
+            quiet = (boolean) configurationFile.getValue("quiet");
+            interval = (int) configurationFile.getValue("interval");
+        } catch(IOException exception) {
+            System.err.println("Could not access config file!");
+        }
     }
 
-    public static void printf(String f, Object... a) {
-        if(!quiet)
-            System.out.printf(f, a);
+    public static void printTagWarning(String fileName) {
+        System.out.printf("Warning: Song not tagged properly: %s\n", fileName);
     }
+
 }

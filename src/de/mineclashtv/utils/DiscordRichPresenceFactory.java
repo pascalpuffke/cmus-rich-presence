@@ -31,21 +31,8 @@ public class DiscordRichPresenceFactory {
     public static DiscordRichPresence getRichPresence(Parser parser, String iconText) {
         if(parser.isPlaying()) {
             if(parser.hasTitle()) {
-                String album = parser.getAlbum();
-                String date = parser.getDate();
-                String artist = parser.getArtist();
-                String title = parser.getTitle();
-
-                String top = format.get("top")
-                        .replace("%album", album)
-                        .replace("%date", date)
-                        .replace("%artist", artist)
-                        .replace("%title", title);
-                String bottom = format.get("bottom")
-                        .replace("%album", album)
-                        .replace("%date", date)
-                        .replace("%artist", artist)
-                        .replace("%title", title);
+                String top = replacePlaceholders(format.get("top"), parser);
+                String bottom = replacePlaceholders(format.get("bottom"), parser);
 
                 return new DiscordRichPresence
                         .Builder(bottom)
@@ -67,5 +54,13 @@ public class DiscordRichPresenceFactory {
             // Nothing is playing; handled in main class
             return null;
         }
+    }
+
+    private static String replacePlaceholders(String s, Parser parser) {
+        return s
+                .replace("%album", parser.getAlbum())
+                .replace("%date", parser.getDate())
+                .replace("%artist", parser.getArtist())
+                .replace("%title", parser.getTitle());
     }
 }

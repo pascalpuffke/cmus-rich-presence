@@ -20,14 +20,14 @@ public class Parser {
         if(shell == null)
             shell = new Shell();
 
-        String remote = shell.exec("cmus-remote -Q | grep '" + tag + "'");
+        String remote = shell.exec("cmus-remote -Q | grep -F '" + tag + "'");
 
         if(remote == null)
             return "";
 
-        return remote.split("\n")[0]
+        return remote.split("\n")[getLineIndexOf(remote, tag)]
                 .substring(tag.length() + 1)
-                .replace("\n", "");
+                .replace("\n", ""); // could be replaced by extending the substring call, but i'm too lazy to change it
     }
 
     public boolean isPlaying() {
@@ -69,4 +69,13 @@ public class Parser {
         return file.substring(0, file.lastIndexOf("."));
     }
 
+    private int getLineIndexOf(String remoteOutput, String tag) {
+        String[] split = remoteOutput.split("\n");
+        for(int i = 0; i < split.length; i++) {
+            if(split[i].contains(tag + " "))
+                return i;
+        }
+
+        return -1;
+    }
 }

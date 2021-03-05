@@ -1,0 +1,84 @@
+v2.0.0
+- Added support for custom config file locations
+- Changed the way configuration parsing works, because why not
+    - Automated populating the internal config map, adding more config options doesn't require changing the code of the
+      ConfigurationFile source anymore
+    - New parser can detect strings, booleans, and integers correctly
+- Replaced my commandline argument parser for the more robust and feature-rich Apache Commons CLI library
+- Made the cmus output parser more robust
+    - Fixed possible wrong album tag readings when a song also has an albumartist tag
+- Other minor code style improvements
+
+v1.9.1
+- Added support for comments in config file
+- Added explaining comments in the default config file
+
+v1.9
+- Added a configuration file
+- Added support for custom formatting!
+  You can use the following placeholders:
+        - %title
+        - %artist
+        - %date
+        - %album
+  There are multiple ways to use this feature:
+        1.  using command-line arguments
+                ```--top, -t``` "format string"
+                ```--bottom, -b``` "format string"
+        2.  using a configuration file
+                Make sure it's called "cmusrp.conf", is in the same directory as the jar file and contains the following:
+                ```
+                TOP_FORMAT="format string goes here"
+                BOTTOM_FORMAT="format string goes here"
+                ```
+
+v1.8
+- Now shows the version string when hovering over icon
+- Minor code improvements
+
+v1.7
+- Added '--quiet' argument
+    - Disables all console output
+- Added argument abbreviations
+    - '--help': '-h'
+    - '--debug': '-d'
+    - '--interval': '-i'
+    - '--quiet': '-q'
+
+v1.6
+- Added '--help' argument
+- Untagged songs will show up a little nicer, now excluding the full path and only showing the filename without extension
+- Tons of code optimizations. Big thanks to [Zom-B](https://github.com/Zom-B)
+
+v1.5
+- Added argument parsing:
+    - '--debug' activates debugging mode introduced in version 1.3
+    - '--interval [int]' sets polling interval in ms [default: 1000]
+- Added warning for songs that are not tagged properly
+- When cmus is paused, it will no longer display activity in Discord
+- Removed unnecessary Logger class, just use default printf
+- The usual code optimizations. It's a lot more readable now.
+
+v1.4
+- Added icon
+- Code cleanups:
+    - Cleaned up main loop just a little
+
+v1.3
+- Added better documentation. It may be too much though, feels like there's more comments than actual code
+- Added debug mode, which disables DiscordRPC and enables verbose logging.
+  May be bloat but this makes debugging without spamming my discord status easier.
+- Code cleanups:
+    - Fix infinite loop statement. I don't know if something bad could happen otherwise, but my IDE told me to do so.
+    - Cleaned up main method
+
+v1.2
+- Added year information
+- Fixed crash when song isn't tagged properly, full filename will be displayed (temporary fix)
+- Removed unused code
+
+v1.1
+- Fixed album parsing
+
+v1.0
+- First release

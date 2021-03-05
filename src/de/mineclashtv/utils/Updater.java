@@ -3,8 +3,6 @@ package de.mineclashtv.utils;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
-import static de.mineclashtv.Main.printf;
-
 public class Updater {
 
     public static boolean run = false;
@@ -22,9 +20,9 @@ public class Updater {
 
             if(debug)
                 if (discordRichPresence == null)
-                    printf("Song is stopped, waiting for playback...\n");
+                    System.out.println("Song is stopped, waiting for playback...");
                 else
-                    printf("%s %s\n", discordRichPresence.details, discordRichPresence.state);
+                    System.out.printf("%s %s\n", discordRichPresence.details, discordRichPresence.state);
 
             // TODO figure out executors
             Thread.sleep(interval);
