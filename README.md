@@ -2,6 +2,8 @@
 External Discord Rich Presence provider for the C* music player. Linux only.
 ![Preview](preview.png)
 
+**If you prefer Rust, I've got you covered now: [cmusrp-rust](https://github.com/MineClashTV/cmusrp-rust)**
+
 ## Usage
 - Download a prebuilt jar from [Releases](https://github.com/MineClashTV/cmus-rich-presence/releases)
 - Start the program by executing ```java -jar cmus-rich-presence-x.x.jar```
